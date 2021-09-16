@@ -37,7 +37,7 @@ def predict():
     prediction = predict_lung(file)
     return {
         "result": prediction[0],
-        "confidence": prediction[1]
+        "confidence": str(prediction[1])
     }, 200
 
 if __name__ == "__main__":

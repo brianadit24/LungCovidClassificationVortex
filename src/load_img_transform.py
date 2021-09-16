@@ -1,5 +1,6 @@
 from torchvision import transforms
 from PIL import Image
+import numpy as np
 
 def transform_image(image):
     # Load Image
