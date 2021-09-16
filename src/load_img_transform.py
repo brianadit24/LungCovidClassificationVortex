@@ -1,24 +1,20 @@
-from torchvision import transforms
-from PIL import Image
 import numpy as np
+import cv2
 
-def transform_image(image):
-    # Load Image
-    img = Image.open(image)
-    img = img.convert('RGB')
-    
-    # Transform Image
-    crop_size = 224
+def normalize(img):
+    mean = [0.485, 0.456, 0.406]
+    std = [0.229, 0.224, 0.225]
 
-    transform = transforms.Compose([
-        transforms.Resize(crop_size),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                            std=[0.229, 0.224, 0.225])
-    ])
+    img = np.array([(img[:,:,i] - mean[i]) / std[i] for i in range(len(mean))])
 
-    input = transform(img)
-    input = input.unsqueeze(0)
-    input = np.array(input).astype('float32')
+    return img
 
-    return input
+def transform_image(file):
+    img = cv2.imdecode(np.fromstring(file.read(), np.uint8), cv2.IMREAD_UNCHANGED)
+    img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR) if len(img.shape) < 3 else img
+    img = cv2.resize(img, (224,224)).astype(np.float32)/255
+    img = img[:,:,::-1]
+    img = normalize(img)
+    img = np.expand_dims(img, 0)
+
+    return img
